@@ -1,92 +1,44 @@
 ---
 layout: default
 ---
-{% include header.html %}
-
-<main class="post_content">
-  <article class="post">
-    <header>
-      <div class="post_image">
-        <img src={{ "/assets/img/" | prepend: site.baseurl | append : page.img}} alt="{{page.title}}">
-      </div>
-      <div class="post_description">
-        <p class="post_meta">{{page.date | date: '%Y, %b %d'}}</p>
-        <h1 class="post_title">{{page.title}}</h1>
-      </div>
-    </header> <!-- End Header -->
-
-    <div class="entry_content">
-      {{page.content | markdownify}}
-    </div>
-    
-    <div class="post_wrapper">
-      <footer class="post_footer cf">
-        <div class="post_share">
-          <span>Share:</span>
-          <a href="https://twitter.com/intent/tweet?text={{ page.title }}&url={{ site.url }}{{ page.url }}" title="Share on Twitter" rel="nofollow" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-          <a href="https://facebook.com/sharer.php?u={{ site.url }}{{ page.url }}" title="Share on Facebook" rel="nofollow" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-          <a href="https://plus.google.com/share?url={{ site.url }}{{ page.url }}" title="Share on Google+" rel="nofollow" target="_blank"><i class="fa fa-google" aria-hidden="true"></i></a>
+{% include calculate_relative_base.html %}
+{% capture post_url %}{{ relativebase }}{{ page.url }}{% endcapture %}
+{% assign post_url = post_url | replace: "//", "/" %}
+<section class="hidden">
+  <div class="post">
+      <a  class="post-list-title" href="{{ post_url }}">{{ page.title }}</a>
+      {% include post_meta.html type="post-card-meta" %}
+        <div class="post-excerpt">
+            {{ page.content | markdownify | strip_newlines | truncatewords: 100 }}<a class="read-more" href="{{ post_url }}"> read more</a>
         </div>
-        <div class="post_tag">
-          <span>Tags:</span>
-          {% for tag in page.tags %}
-          <a href="{{site.baseurl}}/tags#{{tag}}" class="tag">{{ tag }}</a>
-          {% endfor %}
+  </div>
+</section>
+<div class="flex-container transparent">
+  {% include header.html %}
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    {% include schema-meta.html %}
+    <div class="page-image">
+      <div class="cover-image" style="background: url('{{ relativebase }}assets/img/{{ page.img }}') center no-repeat; background-size: cover;"></div>
+    </div>
+    <div class="wrapper">
+      <div class="page-content">
+        <div class="header-page">
+          <h1 class="page-title">{{ page.title }}</h1>
+          {% include post_meta.html type="post-page-meta" %}
         </div>
-      </footer>
-    </div>
-  </article> <!-- End Section Post -->
-
-  <section class="author cf">
-    <div class="post_wrapper">
-      <div class="author_image">
-        <img src="{{site.baseurl}}/assets/img/{% if site.author-pic %}{{ site.author-pic }}{% endif %}" alt="Author face">
+        {% include sidebar.html context="post" class="side" id="sidebar" %}
+        {% if page.toc %}{% include sidebar-toc.html %}{% endif %}
+        {% include github-button.html %}
+        {{page.content | markdownify}}
+        {% include sidebar.html context="post" class="inline" id="post-end" %}
+        <div class="separator"></div>
+        {% include author-box.html %}
+        {% include recent-post.html %}
+        {% include newsletter.html %}
+        {% include comments.html %}
       </div>
-      <div class="author_info">
-        <h2 class="author_title">{% if site.author-name %}{{site.author-name}}{% else %}Dwayne Newman{% endif %}</h2>
-        <p class="author_subtitle">{% if site.about-author %}{{site.about-author}}{% else %}La croix godard blue bottle, vape iceland fingerstache cronut single-origin coffee lyft snackwave normcore small batch.{% endif %}</p>
-        <div class="author_social">
-          {% if site.email %}
-          <span class="author_email"><i class="fa fa-envelope-o" aria-hidden="true"></i> <a href="mailto:{{site.email}}">{{site.email}}</a></span>
-          {% else %}
-          <span class="author_email"><i class="fa fa-envelope-o" aria-hidden="true"></i> <a href="mailto:dwayne@example.com">dwayne@example.com</a></span>
-          {% endif %}
-          
-          {% if site.phone %}
-          <span class="author_phone"><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:{{site.phone}}">{{site.phone}}</a></span>
-          {% else %}
-          <span class="author_phone"><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:+496-169-65-57">(496)-169-6557</a></span>
-          {% endif %}
-
-          {% if site.website %}
-          <span class="author_website"><i class="fa fa-link" aria-hidden="true"></i> <a href="{{site.website}}" target="_blank">{{site.website}}</a></span>
-          {% else %}
-          <span class="author_website"><i class="fa fa-link" aria-hidden="true"></i> <a href="#" target="_blank">https://dwayne.example.com</a></span>
-          {% endif %}            
-        </div>
-      </div>
-    </div>
-  </section> <!-- End Section Author -->
-
-  <section class="recent_box">
-    <div class="post_wrapper">
-      <h2 class="recent_title">Recent post</h2>
-      <div class="recent_list">
-        {% for post in site.posts offset:0 limit:6 %}
-          {% if post.title %}
-            <a href="{{ post.url | prepend: site.baseurl }}"
-              class="recent_item"
-              style="background-image: url( {{ "/assets/img/" | prepend: site.baseurl | append : post.img}} )">
-                <span>{{ post.title }}</span>
-            </a>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-  </section> <!-- End Section Recent Box -->
-  
-  {% include disqus.html %}
-  
-</main> <!-- End Section Post Content -->
-
-{% include footer.html %}
+    </div> <!-- End Wrapper -->
+  </article>
+  {% include search.html %}
+  {% include footer.html %}
+</div>
